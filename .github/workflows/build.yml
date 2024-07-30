@@ -54,7 +54,13 @@ jobs:
           cd /home/runner
           echo 'Preparing packages'
           sudo apt-get update -y
-          sudo apt-get install -y repo git
+          sudo apt-get install -y git curl
+          # repo
+          mkdir /home/runner/bin
+          PATH=/home/runner/bin:$PATH
+          curl https://storage.googleapis.com/git-repo-downloads/repo > /home/runner/bin/repo
+          chmod a+x /home/runner/bin/repo
+
           # echo 'cloning itself'
           # git clone https://github.com/Songkunda/kernelsu_pixel5
           mkdir android-kernel && cd android-kernel
