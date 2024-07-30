@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: build_kernelsu_for_redbull
+name: build_kernelsu_for_redbull_with_aosp
 
 # Controls when the workflow will run
 on:
@@ -68,9 +68,53 @@ jobs:
           # ./build_redbull.sh
           ./build_redbull-gki.sh
 
+      - name: Prepare AOSP
+        run: |
+          cd /home/runner
+          mkdir aosp && cd aosp
+          echo 'pulling aosp source'
+          repo init -u https://android.googlesource.com/platform/manifest -b android-13.0.0_r43
+          repo sync
+
+      - name: prepare aosp driver
+        run: |
+
+          cd /home/runner/aosp
+          DOWNLOAD_URL="https://dl.google.com/dl/android"
+          echo 'pulling aosp drivers'
+          curl --output - $DOWNLOAD_URL/aosp/qcom-redfin-tq2a.230505.002-f274a2f1.tgz | tar -xzvf -
+          curl --output - $DOWNLOAD_URL/aosp/google_devices-redfin-tq2a.230505.002-3fdd0ec2.tgz | tar -xzvf -
+          tail -n +315 extract-qcom-redfin.sh | tar -zxvf -
+          tail -n +315 extract-google_devices-redfin.sh | tar -zxvf -
+
+      - name: Build AOSP
+        run: |
+          cd /home/runner/aosp
+          echo 'building AOSP'
+          source build/envsetup.sh
+          lunch aosp_redfin-userdebug
+          echo "nproc: $(nproc --all)"
+          make -j$(nproc --all)
+
+      - name: zip AOSP
+        run: |
+          cd /home/runner/aosp/out/target/product/redfin/
+          echo "-------打包文件记录-------"
+          ls android-info.txt
+          ls *.img
+          echo "---------------------------"
+          zip -r redfin-rom.zip *.txt *.img *.json
+
       - name: Upload kernel
         if: success()
         uses: actions/upload-artifact@v3
         with:
           name: Image.lz4-dtb
           path: "/home/runner/android-kernel/out/android-msm-pixel-4.19/dist/Image.lz4-dtb"
+
+      - name: Upload AOSP
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: AOSP
+          path: "/home/runner/aosp/out/target/product/redfin/redfin-rom.zip"
