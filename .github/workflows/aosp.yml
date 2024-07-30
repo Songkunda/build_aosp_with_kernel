@@ -55,9 +55,15 @@ jobs:
           cd ~/runner
           echo 'Preparing packages'
           sudo apt-get update -y
-          sudo apt-get install -y repo git
+          sudo apt-get install -y curl git
           # echo 'cloning itself'
           # git clone https://github.com/Songkunda/kernelsu_pixel5
+           # repo
+          mkdir ~/runner/bin
+          PATH=~/runner/bin:$PATH
+          curl https://storage.googleapis.com/git-repo-downloads/repo > ~/runner/bin/repo
+          chmod a+x ~/runner/bin/repo
+
           mkdir android-kernel && cd android-kernel
           echo 'pulling kernel source'
           repo init -u https://android.googlesource.com/kernel/manifest -b android-msm-redbull-4.19-android13-qpr2
