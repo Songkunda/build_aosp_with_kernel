@@ -51,7 +51,7 @@ jobs:
       # Runs a single command using the runners shell
       - name: Preparing
         run: |
-          cd /home/runner
+          cd ~/runner
           echo 'Preparing packages'
           sudo apt-get update -y
           sudo apt-get install -y repo git
@@ -64,13 +64,13 @@ jobs:
 
       - name: Build Kernel
         run: |
-          cd /home/runner/android-kernel
+          cd ~/runner/android-kernel
           # ./build_redbull.sh
           ./build_redbull-gki.sh
 
       - name: Prepare AOSP
         run: |
-          cd /home/runner
+          cd ~/runner
           mkdir aosp && cd aosp
           echo 'pulling aosp source'
           repo init -u https://android.googlesource.com/platform/manifest -b android-13.0.0_r43
@@ -79,7 +79,7 @@ jobs:
       - name: prepare aosp driver
         run: |
 
-          cd /home/runner/aosp
+          cd ~/runner/aosp
           DOWNLOAD_URL="https://dl.google.com/dl/android"
           echo 'pulling aosp drivers'
           curl --output - $DOWNLOAD_URL/aosp/qcom-redfin-tq2a.230505.002-f274a2f1.tgz | tar -xzvf -
@@ -89,7 +89,7 @@ jobs:
 
       - name: Build AOSP
         run: |
-          cd /home/runner/aosp
+          cd ~/runner/aosp
           echo 'building AOSP'
           source build/envsetup.sh
           lunch aosp_redfin-userdebug
@@ -98,7 +98,7 @@ jobs:
 
       - name: zip AOSP
         run: |
-          cd /home/runner/aosp/out/target/product/redfin/
+          cd ~/runner/aosp/out/target/product/redfin/
           echo "-------打包文件记录-------"
           ls android-info.txt
           ls *.img
@@ -110,11 +110,11 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Image.lz4-dtb
-          path: "/home/runner/android-kernel/out/android-msm-pixel-4.19/dist/Image.lz4-dtb"
+          path: "~/runner/android-kernel/out/android-msm-pixel-4.19/dist/Image.lz4-dtb"
 
       - name: Upload AOSP
         if: success()
         uses: actions/upload-artifact@v3
         with:
           name: AOSP
-          path: "/home/runner/aosp/out/target/product/redfin/redfin-rom.zip"
+          path: "~/runner/aosp/out/target/product/redfin/redfin-rom.zip"
