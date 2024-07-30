@@ -51,6 +51,7 @@ jobs:
       # Runs a single command using the runners shell
       - name: Preparing
         run: |
+          mkdir -p ~/runner
           cd ~/runner
           echo 'Preparing packages'
           sudo apt-get update -y
