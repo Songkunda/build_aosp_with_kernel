@@ -1,0 +1,77 @@
+# This is a basic workflow to help you get started with Actions
+
+name: build_kernelsu_for_redbull_with_aosp
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  # push:
+  #   branches: [ "main" ]
+  # pull_request:
+  #   branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      release:
+        description: "Release"
+        required: true
+        default: false
+        type: boolean
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-20.04
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+
+      # Free Disk Space
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          # this might remove tools that are actually needed,
+          # if set to "true" but frees about 6 GB
+          tool-cache: ture
+        
+          # all of these default to true, but feel free to set to
+          # "false" if necessary for your workflow
+          android: false
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+        
+
+      # Runs a single command using the runners shell
+      - name: Preparing
+        run: |
+          cd /home/runner
+          echo 'Preparing packages'
+          sudo apt-get update -y
+          sudo apt-get install -y repo git
+          # echo 'cloning itself'
+          # git clone https://github.com/Songkunda/kernelsu_pixel5
+          mkdir android-kernel && cd android-kernel
+          echo 'pulling kernel source'
+          repo init -u https://android.googlesource.com/kernel/manifest -b android-msm-redbull-4.19-android13-qpr2
+          repo sync
+
+      - name: Build Kernel
+        run: |
+          cd /home/runner/android-kernel
+          # ./build_redbull.sh
+          ./build_redbull-gki.sh
+          
+      - name: Upload kernel
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Image.lz4-dtb
+          path: "/home/runner/android-kernel/out/android-msm-pixel-4.19/dist/Image.lz4-dtb"
