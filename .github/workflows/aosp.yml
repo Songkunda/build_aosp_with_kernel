@@ -59,7 +59,7 @@ jobs:
           # echo 'cloning itself'
           # git clone https://github.com/Songkunda/kernelsu_pixel5
            # repo
-          mkdir ~/runner/bin
+          mkdir -p ~/runner/bin
           PATH=~/runner/bin:$PATH
           curl https://storage.googleapis.com/git-repo-downloads/repo > ~/runner/bin/repo
           chmod a+x ~/runner/bin/repo
