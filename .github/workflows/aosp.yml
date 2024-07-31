@@ -64,7 +64,7 @@ jobs:
           curl https://storage.googleapis.com/git-repo-downloads/repo > ~/runner/bin/repo
           chmod a+x ~/runner/bin/repo
 
-          mkdir android-kernel && cd android-kernel
+          mkdir -p android-kernel && cd android-kernel
           echo 'pulling kernel source'
           repo init -u https://android.googlesource.com/kernel/manifest -b android-msm-redbull-4.19-android13-qpr2
           repo sync
@@ -78,7 +78,7 @@ jobs:
       - name: Prepare AOSP
         run: |
           cd ~/runner
-          mkdir aosp && cd aosp
+          mkdir -p aosp && cd aosp
           echo 'pulling aosp source'
           repo init -u https://android.googlesource.com/platform/manifest -b android-13.0.0_r43
           repo sync
