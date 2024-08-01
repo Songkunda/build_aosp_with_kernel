@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: build_kernelsu_for_redbull_with_aosp
+name: build_kernelsu_for_redbull_with_aosp_clean
 
 # Controls when the workflow will run
 on:
@@ -106,6 +106,8 @@ jobs:
           echo 'building AOSP'
           source build/envsetup.sh
           lunch aosp_redfin-userdebug
+          echo "make cleaning"
+          make clean
           echo "nproc: $(nproc --all)"
           make -j$(nproc --all)
 
