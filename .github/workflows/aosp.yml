@@ -32,21 +32,21 @@ jobs:
       - uses: actions/checkout@v4
 
       # Free Disk Space
-      - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@main
-        with:
-          # this might remove tools that are actually needed,
-          # if set to "true" but frees about 6 GB
-          tool-cache: ture
+      # - name: Free Disk Space (Ubuntu)
+      #   uses: jlumbroso/free-disk-space@main
+      #   with:
+      #     # this might remove tools that are actually needed,
+      #     # if set to "true" but frees about 6 GB
+      #     tool-cache: ture
 
-          # all of these default to true, but feel free to set to
-          # "false" if necessary for your workflow
-          android: false
-          dotnet: true
-          haskell: true
-          large-packages: true
-          docker-images: true
-          swap-storage: true
+      #     # all of these default to true, but feel free to set to
+      #     # "false" if necessary for your workflow
+      #     android: false
+      #     dotnet: true
+      #     haskell: true
+      #     large-packages: true
+      #     docker-images: true
+      #     swap-storage: true
 
       # Runs a single command using the runners shell
       - name: Preparing
@@ -60,14 +60,14 @@ jobs:
           # git clone https://github.com/Songkunda/kernelsu_pixel5
            # repo
           mkdir -p ~/runner/bin
-          PATH=~/runner/bin:$PATH
+          # PATH=~/runner/bin:$PATH
           curl https://storage.googleapis.com/git-repo-downloads/repo > ~/runner/bin/repo
           chmod a+x ~/runner/bin/repo
 
           mkdir -p android-kernel && cd android-kernel
           echo 'pulling kernel source'
-          repo init -u https://android.googlesource.com/kernel/manifest -b android-msm-redbull-4.19-android13-qpr2
-          repo sync
+          ~/runner/bin/repo init -u https://android.googlesource.com/kernel/manifest -b android-msm-redbull-4.19-android13-qpr2
+          ~/runner/bin/repo sync
 
       - name: Build Kernel
         run: |
@@ -80,8 +80,8 @@ jobs:
           cd ~/runner
           mkdir -p aosp && cd aosp
           echo 'pulling aosp source'
-          repo init -u https://android.googlesource.com/platform/manifest -b android-13.0.0_r43
-          repo sync
+          ~/runner/bin/repo init -u https://android.googlesource.com/platform/manifest -b android-13.0.0_r43
+          ~/runner/bin/repo sync
 
       - name: prepare aosp driver
         run: |
