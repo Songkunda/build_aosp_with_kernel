@@ -108,6 +108,7 @@ jobs:
           lunch aosp_redfin-userdebug
           echo "make cleaning"
           make clean
+          export TARGET_PREBUILT_KERNEL=~/runner/android-kernel/out/android-msm-pixel-4.19/dist/Image.lz4-dtb
           echo "nproc: $(nproc --all)"
           make -j$(nproc --all)
 
