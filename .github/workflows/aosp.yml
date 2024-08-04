@@ -1,7 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: build_kernelsu_for_redbull_with_aosp
-
+name: kernelsu_for_redbull_with_aosp
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
@@ -67,9 +66,10 @@ jobs:
           mkdir -p android-kernel && cd android-kernel
           echo 'pulling kernel source'
           ~/runner/bin/repo init -u https://android.googlesource.com/kernel/manifest -b android-msm-redbull-4.19-android13-qpr2
-          ~/runner/bin/repo sync
+          ~/runner/bin/repo sync -c
 
       - name: Build Kernel
+        if: success()
         run: |
           cd ~/runner/android-kernel
           # ./build_redbull.sh
@@ -82,16 +82,17 @@ jobs:
           find . -maxdepth 1 -type f \( -name "Image*" -o -name "boot*" \) -exec zip -v redfin-kernel.zip {} +
 
       - name: Prepare AOSP
+        if: success()
         run: |
           cd ~/runner
           mkdir -p aosp && cd aosp
           echo 'pulling aosp source'
           ~/runner/bin/repo init -u https://android.googlesource.com/platform/manifest -b android-13.0.0_r43
-          ~/runner/bin/repo sync
+          ~/runner/bin/repo sync -c
 
       - name: prepare aosp driver
+        if: success()
         run: |
-
           cd ~/runner/aosp
           DOWNLOAD_URL="https://dl.google.com/dl/android"
           echo 'pulling aosp drivers'
@@ -101,17 +102,22 @@ jobs:
           tail -n +315 extract-google_devices-redfin.sh | tar -zxvf -
 
       - name: Build AOSP
+        if: success()
         run: |
           cd ~/runner/aosp
           echo 'building AOSP'
           source build/envsetup.sh
           lunch aosp_redfin-userdebug
-          echo "nproc: $(nproc --all)"
-          make -j$(nproc --all)
+          echo "nproc: $(nproc --all) -> run make -j8"
+          make -j8
 
       - name: zip AOSP
+        if: success()
         run: |
+
           cd ~/runner/aosp/out/target/product/redfin/
+          echo "export ANDROID_PRODUCT_OUT=\$(pwd)" > flashall.sh
+          echo "fastboot flashall -w" >> flashall.sh
           echo "-------打包文件记录-------"
           ls android-info.txt
           ls *.img
