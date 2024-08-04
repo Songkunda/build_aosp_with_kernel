@@ -96,10 +96,16 @@ jobs:
           cd ~/runner/aosp
           DOWNLOAD_URL="https://dl.google.com/dl/android"
           echo 'pulling aosp drivers'
-          curl --output - $DOWNLOAD_URL/aosp/qcom-redfin-tq2a.230505.002-f274a2f1.tgz | tar -xzvf -
-          curl --output - $DOWNLOAD_URL/aosp/google_devices-redfin-tq2a.230505.002-3fdd0ec2.tgz | tar -xzvf -
-          tail -n +315 extract-qcom-redfin.sh | tar -zxvf -
-          tail -n +315 extract-google_devices-redfin.sh | tar -zxvf -
+          if [ ! -d ~/runner/aosp/extract-google_devices-redfin.sh ]; then
+            echo 'pulling aosp google drivers'
+            curl --output - $DOWNLOAD_URL/aosp/google_devices-redfin-tq2a.230505.002-3fdd0ec2.tgz | tar -xzvf -
+            tail -n +315 extract-google_devices-redfin.sh | tar -zxvf -
+          fi
+          if [ ! -d ~/runner/aosp/extract-qcom-redfin.sh ]; then
+            echo 'pulling aosp qcom drivers'
+            curl --output - $DOWNLOAD_URL/aosp/qcom-redfin-tq2a.230505.002-f274a2f1.tgz | tar -xzvf -
+            tail -n +315 extract-qcom-redfin.sh | tar -zxvf -
+          fi
 
       - name: Build AOSP
         if: success()
@@ -122,7 +128,7 @@ jobs:
           ls android-info.txt
           ls *.img
           echo "---------------------------"
-          zip -r redfin-rom.zip *.txt *.img *.json
+          zip -r redfin-rom.zip *.txt *.img *.json flashall.sh
 
       - name: Upload kernel
         if: success()
