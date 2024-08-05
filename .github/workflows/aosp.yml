@@ -57,11 +57,15 @@ jobs:
           sudo apt-get install -y curl git
           # echo 'cloning itself'
           # git clone https://github.com/Songkunda/kernelsu_pixel5
-           # repo
-          mkdir -p ~/runner/bin
-          # PATH=~/runner/bin:$PATH
-          curl https://storage.googleapis.com/git-repo-downloads/repo > ~/runner/bin/repo
-          chmod a+x ~/runner/bin/repo
+
+
+          if [ ! -d ~/runner/bin/repo ]; then
+            # repo
+            mkdir -p ~/runner/bin
+            # PATH=~/runner/bin:$PATH
+            curl https://storage.googleapis.com/git-repo-downloads/repo > ~/runner/bin/repo
+            chmod a+x ~/runner/bin/repo
+          fi
 
           mkdir -p android-kernel && cd android-kernel
           echo 'pulling kernel source'
