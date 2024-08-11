@@ -110,6 +110,15 @@ jobs:
             curl --output - $DOWNLOAD_URL/aosp/qcom-redfin-tq2a.230505.002-f274a2f1.tgz | tar -xzvf -
             tail -n +315 extract-qcom-redfin.sh | tar -zxvf -
           fi
+      - name: copy kernel to AOSP
+        if: success()
+        run: |
+          cd ~/runner/android-kernel/out/android-msm-pixel-4.19/dist
+          cp ~/runner/android-kernel/out/android-msm-pixel-4.19/dist/*.ko ~/runner/aosp/device/google/redbull-kernel/
+          cp ~/runner/android-kernel/out/android-msm-pixel-4.19/dist/Image.lz4 ~/runner/aosp/device/google/redbull-kernel/
+          cp ~/runner/android-kernel/out/android-msm-pixel-4.19/dist/Image.lz4-dtb ~/runner/aosp/device/google/redbull-kernel/
+          cp ~/runner/android-kernel/out/android-msm-pixel-4.19/dist/kernel-uapi-headers.tar.gz ~/runner/aosp/device/google/redbull-kernel/
+          cp ~/runner/android-kernel/out/android-msm-pixel-4.19/dist/kernel-headers.tar.gz ~/runner/aosp/device/google/redbull-kernel/
 
       - name: Build AOSP
         if: success()
