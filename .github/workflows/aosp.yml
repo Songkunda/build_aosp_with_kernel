@@ -70,7 +70,13 @@ jobs:
           mkdir -p android-kernel && cd android-kernel
           echo 'pulling kernel source'
           ~/runner/bin/repo init -u https://android.googlesource.com/kernel/manifest -b android-msm-redbull-4.19-android13-qpr2
-          ~/runner/bin/repo sync -c
+          ~/runner/bin/repo sync
+
+      - name: Setup KernelSU to Kernel
+        if: success()
+        run: |
+          cd ~/runner/android-kernel/private/msm-google
+          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s v0.9.5
 
       - name: Build Kernel
         if: success()
@@ -83,7 +89,7 @@ jobs:
         if: success()
         run: |
           cd ~/runner/android-kernel/out/android-msm-pixel-4.19/dist
-          find . -maxdepth 1 -type f \( -name "Image*" -o -name "boot*" \) -exec zip -v redfin-kernel.zip {} +
+            find . -maxdepth 1 -type f \( -name "Image*" -o -name "boot*" -o -name "*.ko" -o -name "*.gz" \) -exec zip -v redfin-kernel.zip {} +
 
       - name: Prepare AOSP
         if: success()
@@ -92,7 +98,7 @@ jobs:
           mkdir -p aosp && cd aosp
           echo 'pulling aosp source'
           ~/runner/bin/repo init -u https://android.googlesource.com/platform/manifest -b android-13.0.0_r43
-          ~/runner/bin/repo sync -c
+          ~/runner/bin/repo sync
 
       - name: prepare aosp driver
         if: success()
@@ -114,11 +120,7 @@ jobs:
         if: success()
         run: |
           cd ~/runner/android-kernel/out/android-msm-pixel-4.19/dist
-          cp ~/runner/android-kernel/out/android-msm-pixel-4.19/dist/*.ko ~/runner/aosp/device/google/redbull-kernel/
-          cp ~/runner/android-kernel/out/android-msm-pixel-4.19/dist/Image.lz4 ~/runner/aosp/device/google/redbull-kernel/
-          cp ~/runner/android-kernel/out/android-msm-pixel-4.19/dist/Image.lz4-dtb ~/runner/aosp/device/google/redbull-kernel/
-          cp ~/runner/android-kernel/out/android-msm-pixel-4.19/dist/kernel-uapi-headers.tar.gz ~/runner/aosp/device/google/redbull-kernel/
-          cp ~/runner/android-kernel/out/android-msm-pixel-4.19/dist/kernel-headers.tar.gz ~/runner/aosp/device/google/redbull-kernel/
+          cp ~/runner/android-kernel/out/android-msm-pixel-4.19/dist/* ~/runner/aosp/device/google/redbull-kernel/
 
       - name: Build AOSP
         if: success()
