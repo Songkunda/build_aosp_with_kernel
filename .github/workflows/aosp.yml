@@ -69,7 +69,8 @@ jobs:
 
           mkdir -p android-kernel && cd android-kernel
           echo 'pulling kernel source'
-          ~/runner/bin/repo init -u https://android.googlesource.com/kernel/manifest -b android-msm-redbull-4.19-android13-qpr2
+          # tag android-13.0.0_r0.81
+          ~/runner/bin/repo init -u https://android.googlesource.com/kernel/manifest -b android-msm-redbull-4.19-android13-qpr3
           ~/runner/bin/repo sync
 
       - name: Setup KernelSU to Kernel
@@ -82,8 +83,8 @@ jobs:
         if: success()
         run: |
           cd ~/runner/android-kernel
-          # ./build_redbull.sh
-          ./build_redbull-gki.sh
+          ./build_redbull.sh
+          # ./build_redbull-gki.sh
 
       - name: Zip kernel
         if: success()
@@ -97,7 +98,7 @@ jobs:
           cd ~/runner
           mkdir -p aosp && cd aosp
           echo 'pulling aosp source'
-          ~/runner/bin/repo init -u https://android.googlesource.com/platform/manifest -b android-13.0.0_r43
+          ~/runner/bin/repo init -u https://android.googlesource.com/platform/manifest -b android-13.0.0_r75
           ~/runner/bin/repo sync
 
       - name: prepare aosp driver
@@ -108,19 +109,19 @@ jobs:
           echo 'pulling aosp drivers'
           if [ ! -d ~/runner/aosp/extract-google_devices-redfin.sh ]; then
             echo 'pulling aosp google drivers'
-            curl --output - $DOWNLOAD_URL/aosp/google_devices-redfin-tq2a.230505.002-3fdd0ec2.tgz | tar -xzvf -
+            curl --output - $DOWNLOAD_URL/aosp/google_devices-redfin-tq3a.230901.001-1c6ad221.tgz | tar -xzvf -
             tail -n +315 extract-google_devices-redfin.sh | tar -zxvf -
           fi
           if [ ! -d ~/runner/aosp/extract-qcom-redfin.sh ]; then
             echo 'pulling aosp qcom drivers'
-            curl --output - $DOWNLOAD_URL/aosp/qcom-redfin-tq2a.230505.002-f274a2f1.tgz | tar -xzvf -
+            curl --output - $DOWNLOAD_URL/aosp/qcom-redfin-tq3a.230901.001-e5b12b12.tgz | tar -xzvf -
             tail -n +315 extract-qcom-redfin.sh | tar -zxvf -
           fi
       - name: copy kernel to AOSP
         if: success()
         run: |
           cd ~/runner/android-kernel/out/android-msm-pixel-4.19/dist
-          cp ~/runner/android-kernel/out/android-msm-pixel-4.19/dist/* ~/runner/aosp/device/google/redbull-kernel/
+          cp -v ~/runner/android-kernel/out/android-msm-pixel-4.19/dist/* ~/runner/aosp/device/google/redbull-kernel/
 
       - name: Build AOSP
         if: success()
